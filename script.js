@@ -30,6 +30,7 @@ const questionsElement = document.getElementById("questions");
 const submitButton = document.getElementById("submit");
 const scoreElement = document.getElementById("score");
 
+// Load stored progress
 let userAnswers = JSON.parse(sessionStorage.getItem("progress")) || {};
 
 function renderQuestions() {
@@ -69,6 +70,18 @@ function renderQuestions() {
   });
 }
 
+// ✅ Ensure stored selections are restored before rendering
+document.addEventListener("DOMContentLoaded", () => {
+  userAnswers = JSON.parse(sessionStorage.getItem("progress")) || {};
+  renderQuestions(); // Re-render with stored selections
+
+  // ✅ Persist score after reload
+  const savedScore = localStorage.getItem("score");
+  if (savedScore !== null) {
+    scoreElement.textContent = `Your last score was ${savedScore} out of 5.`;
+  }
+});
+
 submitButton.addEventListener("click", () => {
   let score = 0;
 
@@ -80,15 +93,4 @@ submitButton.addEventListener("click", () => {
 
   localStorage.setItem("score", score);
   scoreElement.textContent = `Your score is ${score} out of 5.`;
-});
-
-// ✅ Ensure session storage values are applied on page load
-document.addEventListener("DOMContentLoaded", () => {
-  userAnswers = JSON.parse(sessionStorage.getItem("progress")) || {};
-  renderQuestions();  // Re-render to ensure selections persist
-
-  const savedScore = localStorage.getItem("score");
-  if (savedScore !== null) {
-    scoreElement.textContent = `Your last score was ${savedScore} out of 5.`;
-  }
 });

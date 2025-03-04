@@ -34,7 +34,7 @@ let userAnswers = JSON.parse(sessionStorage.getItem("progress")) || {};
 
 function renderQuestions() {
   questionsElement.innerHTML = "";
-  
+
   questions.forEach((question, i) => {
     const questionElement = document.createElement("div");
     const questionText = document.createElement("p");
@@ -46,7 +46,8 @@ function renderQuestions() {
       choiceElement.setAttribute("type", "radio");
       choiceElement.setAttribute("name", `question-${i}`);
       choiceElement.setAttribute("value", choice);
-      
+
+      // ✅ Explicitly mark as checked if stored in sessionStorage
       if (userAnswers[i] === choice) {
         choiceElement.checked = true;
       }
@@ -58,34 +59,36 @@ function renderQuestions() {
 
       const choiceLabel = document.createElement("label");
       choiceLabel.textContent = choice;
-      
+
       questionElement.appendChild(choiceElement);
       questionElement.appendChild(choiceLabel);
       questionElement.appendChild(document.createElement("br"));
     });
+
     questionsElement.appendChild(questionElement);
   });
 }
 
 submitButton.addEventListener("click", () => {
   let score = 0;
-  
+
   questions.forEach((question, i) => {
     if (userAnswers[i] === question.answer) {
       score++;
     }
   });
-  
+
   localStorage.setItem("score", score);
   scoreElement.textContent = `Your score is ${score} out of 5.`;
 });
 
-// Display stored score if available
+// ✅ Ensure session storage values are applied on page load
 document.addEventListener("DOMContentLoaded", () => {
+  userAnswers = JSON.parse(sessionStorage.getItem("progress")) || {};
+  renderQuestions();  // Re-render to ensure selections persist
+
   const savedScore = localStorage.getItem("score");
   if (savedScore !== null) {
     scoreElement.textContent = `Your last score was ${savedScore} out of 5.`;
   }
 });
-
-renderQuestions();
